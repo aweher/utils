@@ -1,8 +1,6 @@
 #!/usr/bin/perl
-
 # Script que realiza el backup de las bases de datos de MySQL
 # Hecho por Ariel S. Weher para ClearUpIT
-
 use strict;
 use warnings;
 use DBI;
@@ -11,11 +9,10 @@ use DBI;
 my $host = 'localhost';
 my $usuario = 'root';
 my $password = `cat /root/.my.cnf | grep password | cut -d '=' -f 2`;
-chomp $password;
+my $dirdestino = '/srv/backups/mysql/';
 
 # Cuantos archivos de backup voy a mantener? (sumar uno por el link simbolico)
 my $numbackup = 365;
-
 # Nombre del link simbolico
 my $linksimbolico = "latest-mysql-backup.tar.bz2";
 
@@ -32,6 +29,7 @@ my $wcprogram = '/usr/bin/wc';
 my $lnprogram = '/bin/ln';
 my $cpprogram = '/bin/cp';
 
+chomp $password;
 
 # Defino el programa que voy a usar para obtener la copia de la base de datos y sus parametros de funcionamiento
 my $parametros = "-h$host -u$usuario -p$password --flush-logs --opt --single-transaction --hex-blob";
@@ -52,10 +50,8 @@ foreach (@lineas){
 my $fechahora = `$dateprogram +%Y%m%d-%H%M%S%s`;
 chomp $fechahora;
 
-# Directorios
+my $directorio = $dirdestino.$fechahora.'.borrame/';
 my $existeeldir = 0;
-my $directorio = '/srv/backups/mysql/'.$fechahora.'.borrame/';
-my $dirdestino = '/srv/backups/mysql/';
 
 # Extraigo las bases...
 foreach my $base (@bases){
@@ -88,7 +84,6 @@ if ($cantarchivos > $numbackup){
         chomp $archivomasviejo;
         my $jobh = `$rmprogram -rf $archivomasviejo`;
 }
-
 
 my $archivodestino = $dirdestino."bases.$fechahora.tar.bz2";
 chomp $archivodestino;
