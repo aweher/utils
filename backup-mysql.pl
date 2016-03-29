@@ -43,6 +43,8 @@ my $n = 0;
 foreach (@lineas){
         $n++;
         chomp;
+        next if ($_ =~ /information_schema/);
+        next if ($_ =~ /performance_schema/);
         push(@bases, $_) unless $n eq 1;
 }
 
