@@ -1,14 +1,30 @@
 #!/usr/bin/perl
 # Script que realiza el backup de las bases de datos de MySQL
-# Hecho por Ariel S. Weher para ClearUpIT
+# Hecho por Ariel S. Weher
 use strict;
 use warnings;
 use DBI;
+use Getopt::Long;
+
+# Opciones
+my $READONLY = "";
+my $DEBUG = "";
+my $N = "";
+my $v = "";
+
+# Leo los parametros que me pasaron desde la shell
+GetOptions(
+        "N!"=>\$READONLY,
+        "v!"=>\$DEBUG,
+);
+
+print "USANDO MODO DEBUG\n" if $DEBUG;
+print "USANDO MODO SOLO LECTURA, NO SE ESCRIBIRAN ARCHIVOS\n" if $READONLY;
 
 # Defino los parametros de la base de datos a la que me voy a conectar
 my $host = 'localhost';
-my $usuario = 'root';
-my $password = `cat /root/.my.cnf | grep password | cut -d '=' -f 2`;
+my $usuario = `whoami`;
+my $password = `cat ~/.my.cnf | grep password | cut -d '=' -f 2`;
 my $dirdestino = '/srv/backups/mysql/';
 
 # Cuantos archivos de backup voy a mantener? (sumar uno por el link simbolico)
@@ -45,6 +61,7 @@ foreach (@lineas){
         chomp;
         next if ($_ =~ /information_schema/);
         next if ($_ =~ /performance_schema/);
+        
         push(@bases, $_) unless $n eq 1;
 }
 
