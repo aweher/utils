@@ -1,0 +1,5 @@
+#CentOS: /etc/sysconfig/snmpd
+OPTIONS='-LS 0-4 d -Lf /dev/null -p /var/run/snmpd.pid'
+
+#Debian/Ubuntu: /etc/default/snmpd
+SNMPDOPTS='-LS 0-4 d -Lf /dev/null -u snmp -g snmp -I -smux,mteTrigger,mteTriggerConf -p /var/run/snmpd.pid'
